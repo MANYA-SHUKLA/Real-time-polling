@@ -43,13 +43,14 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
         
         if (message.type === 'vote_update' && message.pollId === poll._id) {
           console.log('Received real-time vote update')
+          const voteUpdate = message as { type: 'vote_update'; pollId?: string; voteCounts: { [key: string]: number }; totalVotes: number };
           setLocalPoll(prev => ({
             ...prev,
             options: prev.options.map(opt => ({
               ...opt,
-              votes: message.voteCounts[opt._id] || 0
+              votes: voteUpdate.voteCounts[opt._id] || 0
             })),
-            totalVotes: message.totalVotes
+            totalVotes: voteUpdate.totalVotes
           }))
         }
         
@@ -235,7 +236,7 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
                     const data = await res.json().catch(() => ({}))
                     throw new Error(data.error || 'Publish failed')
                   }
-                  const published = await res.json()
+                  await res.json()
                   setLocalPoll(prev => ({ ...prev, isPublished: true }))
                 } catch (e) {
                   alert(e instanceof Error ? e.message : 'Publish failed')

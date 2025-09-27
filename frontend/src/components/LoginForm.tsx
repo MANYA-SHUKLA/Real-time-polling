@@ -116,7 +116,7 @@ export default function LoginForm({ onClose, onSwitchToRegister }: LoginFormProp
         </form>
         
         <p className="switch-auth">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button type="button" onClick={onSwitchToRegister}>
             Register
           </button>

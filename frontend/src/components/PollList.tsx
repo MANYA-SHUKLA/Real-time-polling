@@ -1,12 +1,10 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import PollCard from './PollCard'
 import EditPollModal from './EditPollModal'
 import { useAuth } from './AuthContext'
 import { Poll } from '@/types'
 import './PollList.css'
-
 export default function PollList() {
   const { isAuthenticated, user } = useAuth()
   const [polls, setPolls] = useState<Poll[]>([])
@@ -20,20 +18,17 @@ export default function PollList() {
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0, limit: 20 })
   const [retryCountdown, setRetryCountdown] = useState(0)
   const [isRateLimited, setIsRateLimited] = useState(false)
-
-  // Handle rate limiting with auto-retry
   const handleRateLimit = useCallback((retryAfter: number) => {
     setIsRateLimited(true)
     setRetryCountdown(retryAfter)
     setError(`Rate limited. Retrying in ${retryAfter} seconds...`)
-    
     const interval = setInterval(() => {
       setRetryCountdown(prev => {
         if (prev <= 1) {
           clearInterval(interval)
           setIsRateLimited(false)
           setError('')
-          // Auto-retry will be handled by the useEffect when isRateLimited changes
+    
           return 0
         }
         setError(`Rate limited. Retrying in ${prev - 1} seconds...`)
@@ -63,6 +58,13 @@ export default function PollList() {
         // Reset showMyPolls if user is not authenticated
         setShowMyPolls(false)
         return
+      }
+      // Pagination params
+      if (pagination.page && pagination.page > 1) {
+        params.push(`page=${pagination.page}`)
+      }
+      if (pagination.limit) {
+        params.push(`limit=${pagination.limit}`)
       }
       if (params.length) {
         url += '?' + params.join('&')
@@ -100,7 +102,12 @@ export default function PollList() {
       if (data.polls && Array.isArray(data.polls)) {
         setPolls(data.polls)
         if (data.pagination) {
-          setPagination(data.pagination)
+          setPagination(prev => ({
+            // Preserve current limit if backend doesn't send it
+            limit: prev.limit,
+            ...data.pagination
+          }))
+          // console.debug('Pagination updated:', data.pagination)
         }
       } else {
         // Fallback for old format or direct array
@@ -113,7 +120,7 @@ export default function PollList() {
     } finally {
       setLoading(false)
     }
-  }, [viewMode, showMyPolls, statusFilter, isRateLimited, isAuthenticated, handleRateLimit])
+  }, [viewMode, showMyPolls, statusFilter, isRateLimited, isAuthenticated, handleRateLimit, pagination.page, pagination.limit])
 
   const handleEditPoll = (poll: Poll) => {
     setEditingPoll(poll)
@@ -167,6 +174,11 @@ export default function PollList() {
     fetchPolls()
   }, [fetchPolls])
 
+  // Reset to first page when filters change (but ignore when only page itself changes)
+  useEffect(() => {
+    setPagination(prev => prev.page === 1 ? prev : { ...prev, page: 1 })
+  }, [viewMode, statusFilter, showMyPolls])
+
   // Auto-retry when rate limiting ends
   useEffect(() => {
     if (!isRateLimited && retryCountdown === 0 && error.includes('Rate limited')) {
@@ -208,7 +220,7 @@ export default function PollList() {
             <select
               aria-label="Status Filter"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'active' | 'draft' | 'expired' | 'all')}
               className="status-select"
             >
               <option value="active">Active</option>
@@ -325,6 +337,27 @@ export default function PollList() {
               )}
             </div>
           ))}
+          {pagination.pages > 1 && (
+            <div className="pagination-controls" aria-label="Pagination Navigation">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                disabled={pagination.page === 1 || isRateLimited}
+              >
+                Prev
+              </button>
+              <span className="pagination-status">
+                Page {pagination.page} of {pagination.pages}
+              </span>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.pages, prev.page + 1) }))}
+                disabled={pagination.page === pagination.pages || isRateLimited}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -9,7 +9,7 @@ interface EditPollModalProps {
   poll: Poll | null
   isOpen: boolean
   onClose: () => void
-  onUpdate: (updatedPoll: any) => void
+  onUpdate: (updatedPoll: Poll) => void
   onDelete: (pollId: string) => void
 }
 
@@ -116,7 +116,7 @@ export default function EditPollModal({ poll, isOpen, onClose, onUpdate, onDelet
       if (!response.ok) {
         if (data.details) {
           const serverErrors: { [key: string]: string[] } = {};
-          data.details.forEach((detail: any) => {
+          data.details.forEach((detail: { field?: string; message: string }) => {
             const field = detail.field || 'general';
             if (!serverErrors[field]) serverErrors[field] = [];
             serverErrors[field].push(detail.message);

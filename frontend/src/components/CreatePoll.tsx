@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from './AuthContext'
-import { Validator, validateForm } from '@/lib/validation'
+import { Validator } from '@/lib/validation'
 import './CreatePoll.css'
 
 export default function CreatePoll() {
-  const { user } = useAuth()
   const [formData, setFormData] = useState({
     question: '',
     options: ['', ''],
@@ -170,7 +168,7 @@ export default function CreatePoll() {
         if (data.details) {
           // Handle validation errors from server
           const serverErrors: { [key: string]: string[] } = {};
-          data.details.forEach((detail: any) => {
+          data.details.forEach((detail: { field?: string; message: string }) => {
             const field = detail.field || 'general';
             if (!serverErrors[field]) {
               serverErrors[field] = [];

@@ -1,9 +1,12 @@
 import { authService } from './auth';
 
-export interface WebSocketMessage {
-  type: string;
-  [key: string]: any;
-}
+export type WebSocketMessage = 
+  | { type: 'connected'; message: string }
+  | { type: 'subscription_confirmed'; pollId: string }
+  | { type: 'vote_update'; pollId?: string; voteCounts: { [key: string]: number }; totalVotes: number }
+  | { type: 'pong' }
+  | { type: 'error'; message: string }
+  | { type: string; [key: string]: unknown };
 
 export interface WebSocketCallbacks {
   onOpen?: (event: Event) => void;

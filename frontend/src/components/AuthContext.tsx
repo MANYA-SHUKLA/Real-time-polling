@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { AuthUser } from '@/types'
+import { AuthUser, User } from '@/types'
 import { authService } from '@/lib/auth'
 
 interface AuthContextType {
@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (typeof window !== 'undefined' && data?._id) {
         localStorage.setItem('userId', data._id)
       }
-      setUser(prev => ({ ...(prev || {} as any), ...data }))
+      setUser(prev => ({ ...(prev || {} as User), ...data }))
     } catch {}
   }
 

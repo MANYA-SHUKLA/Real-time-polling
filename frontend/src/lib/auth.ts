@@ -1,6 +1,8 @@
+import { AuthUser } from '@/types';
+
 class AuthService {
   private token: string | null = null;
-  private user: any = null;
+  private user: AuthUser | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -10,7 +12,7 @@ class AuthService {
     }
   }
 
-  setAuth(token: string, user: any) {
+  setAuth(token: string, user: AuthUser) {
     this.token = token;
     this.user = user;
     
@@ -24,7 +26,7 @@ class AuthService {
     return this.token;
   }
 
-  getUser(): any {
+  getUser(): AuthUser | null {
     return this.user;
   }
 
