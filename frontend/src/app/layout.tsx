@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/components/AuthContext'
 import ThemeToggle from '@/components/ThemeToggle'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Real-Time Polling App',
@@ -23,11 +24,14 @@ export default function RootLayout({
           }}
         />
         <AuthProvider>
-          <div className="min-h-screen">
+          <div className="min-h-screen" style={{display:'flex', flexDirection:'column'}}>
             <div style={{position:'fixed', top:'1rem', right:'1rem', zIndex:1000}}>
               <ThemeToggle />
             </div>
-            {children}
+            <div style={{flex:1, display:'flex', flexDirection:'column'}}>
+              {children}
+            </div>
+            <Footer />
           </div>
         </AuthProvider>
       </body>
