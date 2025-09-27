@@ -225,3 +225,5 @@
   We override it here (later in cascade) to allow the menu to extend below.
   This change is narrowly scoped and does not alter layout logic. */
 .header { overflow: visible; }
+/* Position user actions (profile dropdown) to the right so the menu is fully visible */
+.header-actions { align-self: flex-end; }
