@@ -219,3 +219,9 @@
 .loading-screen { display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; min-height: 60vh; color: #fff; }
 .loading-spinner { width: 54px; height: 54px; border-radius: 50%; border: 6px solid rgba(255,255,255,0.2); border-top-color: #fff; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Dropdown visibility fix ---
+  Original header used overflow:hidden which clipped the user profile dropdown.
+  We override it here (later in cascade) to allow the menu to extend below.
+  This change is narrowly scoped and does not alter layout logic. */
+.header { overflow: visible; }
