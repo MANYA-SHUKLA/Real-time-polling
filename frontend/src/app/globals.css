@@ -81,6 +81,44 @@ body {
   overflow-x: hidden;
 }
 
+/* App Shell structural helpers */
+.app-shell {
+  position: relative;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  background: #111827;
+  color: #fff;
+  padding: 10px 16px;
+  z-index: 2000;
+  border-radius: 8px;
+  font-weight: 600;
+  transform: translateY(0);
+  transition: top .3s ease;
+}
+.skip-link:focus { top: 8px; outline: 2px solid var(--color-accent); }
+
+/* Decorative accent orbs behind everything */
+.bg-accent-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(99,102,241,0.18), transparent 60%),
+    radial-gradient(circle at 75% 65%, rgba(168,85,247,0.18), transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(245,158,11,0.12), transparent 70%);
+  mix-blend-mode: plus-lighter;
+  filter: blur(30px) saturate(140%);
+  opacity: .55;
+  z-index: -2;
+  animation: orbPulse 18s ease-in-out infinite alternate;
+}
+@keyframes orbPulse { 0% { transform: scale(1);} 50% { transform: scale(1.05);} 100% { transform: scale(1);} }
+
 /* Surface helpers reacting to theme */
 .surface {
   background: var(--color-surface);

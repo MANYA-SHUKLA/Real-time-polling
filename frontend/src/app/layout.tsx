@@ -3,10 +3,26 @@ import type { Metadata } from 'next'
 import { AuthProvider } from '@/components/AuthContext'
 import ThemeToggle from '@/components/ThemeToggle'
 import Footer from '@/components/Footer'
+import React from 'react'
 
 export const metadata: Metadata = {
   title: 'Real-Time Polling App',
   description: 'Vote and see results in real-time',
+  keywords: ['polls', 'real-time', 'voting', 'websocket', 'live results', 'survey'],
+  openGraph: {
+    title: 'Real-Time Polling App',
+    description: 'Create polls, vote instantly, and watch live results update.',
+    type: 'website',
+    url: 'https://example.com',
+    siteName: 'Real-Time Polling',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Real-Time Polling App',
+    description: 'Create polls, vote instantly, and watch live results update.'
+  },
+  themeColor: '#6366f1',
+  manifest: '/site.webmanifest'
 }
 
 export default function RootLayout({
@@ -16,7 +32,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+        <meta name="color-scheme" content="light dark" />
+      </head>
+      <body className="theme-transition">
+        <a href="#main" className="skip-link">Skip to content</a>
         {/* Initial theme inline script to avoid FOUC */}
         <script
           dangerouslySetInnerHTML={{
@@ -24,16 +45,18 @@ export default function RootLayout({
           }}
         />
         <AuthProvider>
-          <div className="min-h-screen" style={{display:'flex', flexDirection:'column'}}>
-            <div style={{position:'fixed', top:'1rem', right:'1rem', zIndex:1000}}>
+          <div className="app-shell min-h-screen flex flex-col">
+            <div className="fixed top-4 right-4 z-[1000]">
               <ThemeToggle />
             </div>
-            <div style={{flex:1, display:'flex', flexDirection:'column'}}>
+            <main id="main" className="flex-1 flex flex-col">
               {children}
-            </div>
+            </main>
             <Footer />
           </div>
         </AuthProvider>
+        {/* Decorative background gradients (non-intrusive) */}
+        <div aria-hidden="true" className="bg-accent-orbs" />
       </body>
     </html>
   )
