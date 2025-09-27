@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/components/AuthContext'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export const metadata: Metadata = {
   title: 'Real-Time Polling App',
@@ -15,8 +16,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        {/* Initial theme inline script to avoid FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(()=>{try{const s=localStorage.getItem('rtp-theme');if(s){document.documentElement.setAttribute('data-theme',s);}else{const m=window.matchMedia('(prefers-color-scheme: dark)');document.documentElement.setAttribute('data-theme',m.matches?'dark':'light');}}catch(e){}})();`
+          }}
+        />
         <AuthProvider>
           <div className="min-h-screen">
+            <div style={{position:'fixed', top:'1rem', right:'1rem', zIndex:1000}}>
+              <ThemeToggle />
+            </div>
             {children}
           </div>
         </AuthProvider>

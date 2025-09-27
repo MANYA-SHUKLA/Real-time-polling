@@ -99,7 +99,20 @@
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  /* trigger animation scope */
 }
+
+/* Poll item entrance animation (stagger using nth-child) */
+.poll-item { opacity: 0; transform: translateY(22px); animation: pollFadeUp .8s cubic-bezier(.4,0,.2,1) forwards; }
+.poll-item:nth-child(1) { animation-delay: .05s; }
+.poll-item:nth-child(2) { animation-delay: .10s; }
+.poll-item:nth-child(3) { animation-delay: .15s; }
+.poll-item:nth-child(4) { animation-delay: .20s; }
+.poll-item:nth-child(5) { animation-delay: .25s; }
+.poll-item:nth-child(6) { animation-delay: .30s; }
+.poll-item:nth-child(7) { animation-delay: .35s; }
+.poll-item:nth-child(8) { animation-delay: .40s; }
+@keyframes pollFadeUp { to { opacity:1; transform: translateY(0);} }
 
 .poll-item {
   display: flex;
