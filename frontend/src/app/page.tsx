@@ -18,19 +18,6 @@ export default async function Home() {
   const initialPolls = await fetchInitialPolls()
   return (
     <div className="home-container">
-      {/* Hero / Intro Section */}
-      <section className="header">
-        <div className="container header-content animate-fade-up">
-          <h1 className="title">Real‑Time Polling</h1>
-          <p className="subtitle">Create engaging polls, vote instantly, and watch live results update in real-time. Empower your audience with instant feedback and interactive decision making.</p>
-          <div className="header-actions animate-fade-up-delayed">
-            <div className="auth-buttons">
-              <Link href="/register" className="btn btn-primary">Get Started</Link>
-              <Link href="/login" className="btn btn-secondary">Sign In</Link>
-            </div>
-          </div>
-        </div>
-      </section>
       {/* Poll Listing / Interactive Client */}
       <div className="main-content container animate-fade-up-slower">
         <HomeClient initialPolls={initialPolls} />
