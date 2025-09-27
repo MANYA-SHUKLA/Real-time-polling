@@ -1,69 +1,27 @@
-.user-list {
-  max-width: 1000px;
-  margin: 0 auto;
-}
 
-.user-list-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
+.user-list { max-width:1180px; margin:0 auto; padding:1rem 1.25rem 2.75rem; position:relative; }
+.user-list::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 20% 18%,rgba(99,102,241,0.35),transparent 65%), radial-gradient(circle at 82% 78%,rgba(236,72,153,0.3),transparent 70%); pointer-events:none; opacity:.75; }
 
-.user-list-header h2 {
-  color: white;
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
+.user-list-header { text-align:center; margin:0 0 2.4rem; position:relative; }
+.user-list-header h2 { font-size:2.35rem; font-weight:700; letter-spacing:-1px; margin:0 0 .65rem; background:linear-gradient(90deg,#ffffff,#dbeafe,#ffe4e6); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 2px 14px rgba(255,255,255,0.25); }
+.user-list-header p { color:rgba(255,255,255,0.82); font-size:1.05rem; letter-spacing:.25px; max-width:640px; margin:0 auto; line-height:1.45; }
 
-.user-list-header p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-}
+.users-grid { display:grid; gap:1.75rem; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); position:relative; }
 
-.users-grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
+.user-card { position:relative; background:linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78)); backdrop-filter:blur(18px) saturate(170%); -webkit-backdrop-filter:blur(18px) saturate(170%); padding:1.55rem 1.4rem 1.65rem; border-radius:24px; text-align:center; border:1px solid rgba(255,255,255,0.6); box-shadow:0 10px 32px -14px rgba(15,23,42,0.55),0 4px 12px -6px rgba(0,0,0,0.18); overflow:hidden; transform:translateY(0) scale(1); transition: transform .65s cubic-bezier(.16,.8,.24,1), box-shadow .65s, border-color .5s; }
+.user-card::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 75% 15%,rgba(99,102,241,0.25),transparent 60%), radial-gradient(circle at 25% 85%,rgba(236,72,153,0.25),transparent 65%); opacity:.85; pointer-events:none; }
+.user-card::after { content:""; position:absolute; inset:0; background:linear-gradient(140deg,rgba(255,255,255,0.7),rgba(255,255,255,0)); mix-blend-mode:overlay; opacity:.55; pointer-events:none; }
+.user-card:hover { transform:translateY(-10px) scale(1.02); box-shadow:0 22px 60px -24px rgba(15,23,42,0.7),0 6px 18px -4px rgba(0,0,0,0.25); }
+.user-card h3 { color:#1e293b; margin:0 0 .45rem; font-size:1.28rem; font-weight:650; letter-spacing:-.5px; position:relative; z-index:1; }
+.user-card p { color:#475569; margin:0 0 .6rem; font-size:.9rem; font-weight:500; position:relative; z-index:1; }
+.user-card small { display:inline-block; color:#64748b; font-size:.68rem; font-weight:600; letter-spacing:.65px; text-transform:uppercase; background:linear-gradient(90deg,#e0f2fe,#ede9fe,#ffe4e6); padding:.4rem .65rem .42rem; border-radius:30px; position:relative; z-index:1; box-shadow:0 2px 4px -2px rgba(0,0,0,0.18),0 1px 0 0 rgba(255,255,255,0.6) inset; }
 
-.user-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
+/* Loading & error states (basic hooks) */
+.loading, .error { text-align:center; margin:2.5rem auto; font-size:1rem; font-weight:600; letter-spacing:.5px; }
+.loading { color:#fff; opacity:.85; }
+.error { color:#fecaca; }
 
-.user-card:hover {
-  transform: translateY(-5px);
-}
-
-.user-card h3 {
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-size: 1.3rem;
-}
-
-.user-card p {
-  color: #666;
-  margin-bottom: 0.5rem;
-}
-
-.user-card small {
-  color: #999;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-  .user-list-header h2 {
-    font-size: 1.5rem;
-  }
-  
-  .user-list-header p {
-    font-size: 1rem;
-  }
-  
-  .users-grid {
-    grid-template-columns: 1fr;
-  }
-}
+@media (max-width:1040px){ .user-list-header h2 { font-size:2rem; } }
+@media (max-width:840px){ .user-card { border-radius:22px; } }
+@media (max-width:640px){ .user-list { padding: .75rem .85rem 2.4rem; } .user-list-header h2 { font-size:1.8rem; } .users-grid { gap:1.25rem; } }
+@media (max-width:480px){ .user-card { padding:1.3rem 1.15rem 1.4rem; border-radius:20px; } .user-card h3 { font-size:1.15rem; } }
