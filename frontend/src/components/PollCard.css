@@ -1,44 +1,37 @@
-.poll-card {
-  --pc-radius: 20px;
-  --pc-bg: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.72));
-  --pc-border: rgba(255,255,255,0.42);
-  --pc-shadow: 0 8px 24px -6px rgba(15,23,42,0.26),0 4px 12px -4px rgba(0,0,0,0.18);
-  --pc-shadow-hover: 0 18px 46px -12px rgba(15,23,42,0.5),0 8px 22px -8px rgba(0,0,0,0.35);
-  background: var(--pc-bg);
-  border-radius: var(--pc-radius);
-  padding: 2rem 2rem 2.25rem;
-  -webkit-backdrop-filter: blur(16px) saturate(185%);
-  backdrop-filter: blur(16px) saturate(185%);
-  border: 1px solid var(--pc-border);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--pc-shadow);
-  transition: transform .65s cubic-bezier(.34,.07,.19,.97), box-shadow .6s, border-color .6s, background .6s;
-  isolation: isolate;
-}
-.poll-card::before {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(120deg,rgba(255,255,255,0.35),rgba(255,255,255,0)),
-    url('https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=40') center/cover no-repeat;
-  opacity: 0.15;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  filter: saturate(150%) contrast(108%);
-}
-.poll-card::after {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 82% 18%,rgba(99,102,241,0.38),transparent 68%),
-    radial-gradient(circle at 18% 85%,rgba(236,72,153,0.28),transparent 70%);
-  opacity: .6;
-  pointer-events: none;
-  transition: opacity .6s;
-}
-.poll-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--pc-shadow-hover); border-color: rgba(255,255,255,0.65); }
-.poll-card:hover::after { opacity:.75; }
+.poll-card { --pc-radius:20px; --pc-bg:linear-gradient(155deg,rgba(248,250,252,0.78),rgba(241,245,249,0.65)); --pc-border:rgba(148,163,184,0.35); --pc-shadow:0 8px 26px -8px rgba(15,23,42,0.25),0 4px 14px -6px rgba(0,0,0,0.15); --pc-shadow-hover:0 20px 54px -18px rgba(15,23,42,0.48),0 10px 26px -12px rgba(0,0,0,0.32); background:var(--pc-bg); border-radius:var(--pc-radius); padding:2rem 2rem 2.25rem; -webkit-backdrop-filter:blur(14px) saturate(170%); backdrop-filter:blur(14px) saturate(170%); border:1px solid var(--pc-border); position:relative; overflow:hidden; box-shadow:var(--pc-shadow); transition:transform .6s cubic-bezier(.34,.07,.19,.97), box-shadow .55s, border-color .55s, background .55s, filter .55s; isolation:isolate; }
+.poll-card::before { content:""; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,0.25),rgba(255,255,255,0)), url('https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=40') center/cover no-repeat; opacity:.12; mix-blend-mode:overlay; pointer-events:none; filter:saturate(140%) contrast(104%); }
+.poll-card::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 78% 20%,rgba(99,102,241,0.32),transparent 70%), radial-gradient(circle at 20% 82%,rgba(236,72,153,0.24),transparent 72%); opacity:.5; pointer-events:none; transition:opacity .55s; }
+.poll-card:hover { transform:translateY(-6px) scale(1.015); box-shadow:var(--pc-shadow-hover); border-color:rgba(99,102,241,0.45); }
+.poll-card:hover::after { opacity:.68; }
+
+/* Improve text contrast */
+.poll-question { background:none; color:#1e293b; }
+[data-theme="dark"] .poll-question { background:none; color:#f1f5f9; }
+
+/* Option blocks slightly darker for separation */
+.poll-option { background:rgba(255,255,255,0.65); border:1px solid rgba(203,213,225,0.6); }
+.poll-option:hover { background:rgba(255,255,255,0.78); }
+[data-theme="dark"] .poll-option { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.14); }
+[data-theme="dark"] .poll-option:hover { background:rgba(255,255,255,0.14); }
+
+.option-text { color:#1f2937; }
+[data-theme="dark"] .option-text { color:#e2e8f0; }
+
+.vote-counts { color:#475569; }
+[data-theme="dark"] .vote-counts { color:#cbd5e1; }
+
+.total-votes { color:#334155; }
+[data-theme="dark"] .total-votes { color:#cbd5e1; }
+
+/* Reduce internal glow of vote bar for clarity */
+.vote-bar { background:#e2e8f0; }
+[data-theme="dark"] .vote-bar { background:rgba(255,255,255,0.15); }
+
+/* Ensure connection status pill not overly bright */
+.connection-status { background:rgba(255,255,255,0.6); color:#334155; }
+[data-theme="dark"] .connection-status { background:rgba(255,255,255,0.08); color:#cbd5e1; }
+
+/* Duplicated older block cleanup (retain new variables) */
 
 @media (prefers-reduced-motion: reduce) {
   .poll-card, .poll-card:hover { transform:none !important; }
