@@ -265,6 +265,38 @@ const broadcastToPoll = (pollId, data) => {
 
 app.locals.broadcastToPoll = broadcastToPoll;
 
+// Broadcast a notification to all active WebSocket connections for a specific user
+const broadcastToUser = (userId, event, data = {}) => {
+  if (!userId || !event) return 0;
+  let recipientCount = 0;
+  const payload = {
+    type: 'notification',
+    event,
+    data,
+    timestamp: new Date().toISOString()
+  };
+  try {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN && client.userId && client.userId.toString() === userId.toString()) {
+        try {
+          client.send(JSON.stringify(payload));
+          recipientCount++;
+        } catch (err) {
+          console.error('Failed to send user notification:', err.message);
+        }
+      }
+    });
+  } catch (outerErr) {
+    console.error('broadcastToUser loop error:', outerErr.message);
+  }
+  if (recipientCount === 0) {
+    // Optional debug: user has no active WS connections
+  }
+  return recipientCount;
+};
+
+app.locals.broadcastToUser = broadcastToUser;
+
 // WebSocket status endpoint
 app.get('/api/websocket/status', (req, res) => {
   const stats = {

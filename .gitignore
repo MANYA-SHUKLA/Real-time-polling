@@ -23,7 +23,7 @@ pnpm-debug.log*
 !*.example
 backend/.env
 backend/.env.*
-frontend/.env.local
+frontend/.env
 frontend/.env.*
 !backend/.env.example
 !frontend/.env.local.example

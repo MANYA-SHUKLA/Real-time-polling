@@ -13,6 +13,7 @@ const {
   updateProfileValidation
 } = require('../middleware/validation');
 const { authLimiter, strictLimiter } = require('../middleware/rateLimit');
+const { sendNotificationEmail } = require('../utils/mailer');
 const router = express.Router();
 
 // Helper function to generate JWT token
@@ -265,6 +266,22 @@ router.put('/change-password', auth, strictLimiter, changePasswordValidation, ha
     user.password = newPassword;
     await user.save();
 
+    // WebSocket notify user
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'password_changed', {
+        message: 'Password changed successfully'
+      });
+    } catch (notifyErr) {
+      console.error('Password change notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'password_changed');
+    } catch (emailErr) {
+      console.error('Password change email notification error:', emailErr.message);
+    }
+
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -300,6 +317,31 @@ router.put('/profile', auth, updateProfileValidation, handleValidationErrors, as
     if (name) user.name = name.trim();
     
     await user.save();
+
+    // Determine which fields changed for notification context
+    const changed = [];
+    if (name) changed.push('name');
+    if (email && email.toLowerCase().trim() !== req.user.email.toLowerCase()) changed.push('email');
+    
+    // WebSocket notification
+    try {
+      if (changed.length && req.app.locals.broadcastToUser) {
+        req.app.locals.broadcastToUser(req.user._id, 'profile_updated', {
+          changedFields: changed
+        });
+      }
+    } catch (notifyErr) {
+      console.error('Profile update notification error:', notifyErr.message);
+    }
+
+    // Email notification
+    try {
+      if (changed.length > 0) {
+        await sendNotificationEmail(user, 'profile_updated', { changedFields: changed });
+      }
+    } catch (emailErr) {
+      console.error('Profile update email notification error:', emailErr.message);
+    }
 
     res.json(user.getPublicProfile());
   } catch (error) {

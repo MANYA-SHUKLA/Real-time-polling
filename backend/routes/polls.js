@@ -12,6 +12,7 @@ const {
   updatePollValidation 
 } = require('../middleware/validation');
 const { pollCreationLimiter } = require('../middleware/rateLimit');
+const { sendNotificationEmail } = require('../utils/mailer');
 const router = express.Router();
 
 // Create poll with options (including expiration)
@@ -69,6 +70,28 @@ router.post('/', auth, pollCreationLimiter, createPollValidation, handleValidati
     const populatedPoll = await Poll.findById(poll._id)
       .populate('creator', 'name email')
       .populate('options');
+
+    // Notify creator about poll creation (draft or published)
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'poll_created', {
+        pollId: populatedPoll._id,
+        question: populatedPoll.question,
+        status: populatedPoll.isPublished ? 'published' : 'draft'
+      });
+    } catch (notifyErr) {
+      console.error('Poll creation notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'poll_created', {
+        pollId: populatedPoll._id,
+        question: populatedPoll.question,
+        status: populatedPoll.isPublished ? 'published' : 'draft'
+      });
+    } catch (emailErr) {
+      console.error('Poll creation email notification error:', emailErr.message);
+    }
 
     res.status(201).json(populatedPoll);
   } catch (error) {
@@ -412,6 +435,26 @@ router.put('/:id', auth, pollIdValidation, updatePollValidation, handleValidatio
     }));
     pollObj.totalVotes = votes.length;
 
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'poll_updated', {
+        pollId: pollObj._id,
+        question: pollObj.question,
+        isPublished: pollObj.isPublished
+      });
+    } catch (notifyErr) {
+      console.error('Poll update notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'poll_updated', {
+        pollId: pollObj._id,
+        question: pollObj.question
+      });
+    } catch (emailErr) {
+      console.error('Poll update email notification error:', emailErr.message);
+    }
+
     res.json({
       message: 'Poll updated successfully',
       poll: pollObj
@@ -559,6 +602,25 @@ router.patch('/:id/publish', auth, pollIdValidation, handleValidationErrors, asy
     await poll.populate('creator', 'name email');
     await poll.populate('options');
 
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'poll_published', {
+        pollId: poll._id,
+        question: poll.question
+      });
+    } catch (notifyErr) {
+      console.error('Poll publish notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'poll_published', {
+        pollId: poll._id,
+        question: poll.question
+      });
+    } catch (emailErr) {
+      console.error('Poll publish email notification error:', emailErr.message);
+    }
+
     res.json({
       message: 'Poll published successfully',
       poll: poll
@@ -592,6 +654,25 @@ router.patch('/:id/unpublish', auth, pollIdValidation, handleValidationErrors, a
 
     await poll.populate('creator', 'name email');
     await poll.populate('options');
+
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'poll_unpublished', {
+        pollId: poll._id,
+        question: poll.question
+      });
+    } catch (notifyErr) {
+      console.error('Poll unpublish notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'poll_unpublished', {
+        pollId: poll._id,
+        question: poll.question
+      });
+    } catch (emailErr) {
+      console.error('Poll unpublish email notification error:', emailErr.message);
+    }
 
     res.json({
       message: 'Poll unpublished successfully',
@@ -682,6 +763,25 @@ router.delete('/:id', auth, pollIdValidation, handleValidationErrors, async (req
 
     await session.commitTransaction();
     session.endSession();
+
+    try {
+      req.app.locals.broadcastToUser && req.app.locals.broadcastToUser(req.user._id, 'poll_deleted', {
+        pollId: pollInfo.id,
+        question: pollInfo.question
+      });
+    } catch (notifyErr) {
+      console.error('Poll deletion notification error:', notifyErr.message);
+    }
+
+    // Send email notification
+    try {
+      await sendNotificationEmail(req.user, 'poll_deleted', {
+        pollId: pollInfo.id,
+        question: pollInfo.question
+      });
+    } catch (emailErr) {
+      console.error('Poll deletion email notification error:', emailErr.message);
+    }
 
     res.json({
       message: 'Poll deleted successfully',
