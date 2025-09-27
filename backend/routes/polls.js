@@ -15,6 +15,36 @@ const { pollCreationLimiter } = require('../middleware/rateLimit');
 const { sendNotificationEmail } = require('../utils/mailer');
 const router = express.Router();
 
+// Simple in-memory micro-cache (not for production clustering). TTL 5s default.
+const pollListCache = new Map();
+const CACHE_TTL_MS = 5000; // configurable if needed
+
+function getCacheKey(req) {
+  // Only cache if unauthenticated (no req.user)
+  const relevant = { ...req.query };
+  const sortedKeys = Object.keys(relevant).sort();
+  const base = sortedKeys.map(k => `${k}=${relevant[k]}`).join('&');
+  return base || 'default';
+}
+
+function pollListCacheMiddleware(req, res, next) {
+  if (req.user) return next(); // Skip cache for authenticated (personalization)
+  const key = getCacheKey(req);
+  const entry = pollListCache.get(key);
+  if (entry && (Date.now() - entry.time) < CACHE_TTL_MS) {
+    return res.json(entry.data);
+  }
+  // Monkey-patch res.json to store result
+  const originalJson = res.json.bind(res);
+  res.json = (body) => {
+    try {
+      pollListCache.set(key, { time: Date.now(), data: body });
+    } catch (_) { /* ignore cache set errors */ }
+    return originalJson(body);
+  };
+  next();
+}
+
 // Create poll with options (including expiration)
 router.post('/', auth, pollCreationLimiter, createPollValidation, handleValidationErrors, async (req, res) => {
   const session = await Poll.startSession();
@@ -102,144 +132,126 @@ router.post('/', auth, pollCreationLimiter, createPollValidation, handleValidati
 });
 
 // Get all polls with expiration support
-router.get('/', optionalAuth, pollQueryValidation, handleValidationErrors, async (req, res) => {
+router.get('/', optionalAuth, pollQueryValidation, handleValidationErrors, pollListCacheMiddleware, async (req, res) => {
   try {
-    let { 
-      published, 
-      includeUnpublished = false, 
+    let {
+      published,
+      includeUnpublished = false,
       myPolls = false,
       status = 'active',
       page = 1,
       limit = 20
     } = req.query;
 
-    // Normalize booleans from query (which arrive as strings)
     const boolFrom = v => (v === true || v === 'true');
     includeUnpublished = boolFrom(includeUnpublished);
     myPolls = boolFrom(myPolls);
 
-    // Parse numeric pagination early and validate
-    page = parseInt(page, 10);
-    limit = parseInt(limit, 10);
+    page = parseInt(page, 10); limit = parseInt(limit, 10);
     if (isNaN(page) || page < 1) page = 1;
     if (isNaN(limit) || limit < 1 || limit > 100) limit = 20;
 
-    // Build query based on parameters
-    let query = {};
-
-    // Status-based filtering
+    const baseMatch = {};
+    const now = new Date();
     if (status !== 'all') {
-      switch (status) {
-        case 'active':
-          query.isPublished = true;
-          query.$or = [
-            { expiresAt: null },
-            { expiresAt: { $gt: new Date() } }
-          ];
-          break;
-        case 'expired':
-          query.isPublished = true;
-          query.expiresAt = { $lte: new Date() };
-          break;
-        case 'draft':
-          query.isPublished = false;
-          break;
+      if (status === 'active') {
+        baseMatch.isPublished = true;
+        baseMatch.$or = [{ expiresAt: null }, { expiresAt: { $gt: now } }];
+      } else if (status === 'expired') {
+        baseMatch.isPublished = true; baseMatch.expiresAt = { $lte: now };
+      } else if (status === 'draft') {
+        baseMatch.isPublished = false;
       }
     } else {
-      // status === 'all'
-      if (published === 'true') {
-        query.isPublished = true;
-      } else if (published === 'false') {
-        // Only include unpublished if explicitly requested
-        if (includeUnpublished) {
-          query.isPublished = false;
-        } else {
-          // fallback: show only published if not allowed to see drafts
-          query.isPublished = true;
-        }
-      }
+      if (published === 'true') baseMatch.isPublished = true;
+      else if (published === 'false') baseMatch.isPublished = includeUnpublished ? false : true;
     }
 
-    // If myPolls is true and user is authenticated, show only user's polls
-    if (myPolls && req.user) {
-      query.creator = req.user._id;
-    } else if (myPolls && !req.user) {
-      return res.status(401).json({ error: 'Authentication required to view your polls' });
-    }
+    if (myPolls && req.user) baseMatch.creator = req.user._id;
+    else if (myPolls && !req.user) return res.status(401).json({ error: 'Authentication required to view your polls' });
 
     const skip = (page - 1) * limit;
 
-    const polls = await Poll.find(query)
-      .populate('creator', 'name email')
-      .populate('options')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const total = await Poll.countDocuments(query);    // Get vote counts for each poll and its options
-    const pollsWithVotes = await Promise.all(
-      polls.map(async (poll) => {
-        try {
-          const votes = await Vote.find({ poll: poll._id });
-          
-          let userVoted = false;
-          let userVoteOption = null;
-          if (req.user) {
-            const userVote = await Vote.findOne({ poll: poll._id, user: req.user._id });
-            userVoted = !!userVote;
-            userVoteOption = userVote ? userVote.pollOption.toString() : null;
-          }
-
-        const optionVotes = {};
-        votes.forEach(vote => {
-          const optionId = vote.pollOption.toString();
-          optionVotes[optionId] = (optionVotes[optionId] || 0) + 1;
-        });
-
-        const pollObj = poll.toObject();
-        pollObj.options = pollObj.options.map(option => ({
-          ...option,
-          votes: optionVotes[option._id] || 0
-        }));
-
-        pollObj.totalVotes = votes.length;
-        pollObj.userVoted = userVoted;
-        pollObj.userVoteOption = userVoteOption;
-
-        return pollObj;
-        } catch (pollError) {
-          console.error('Error processing poll:', poll._id, pollError);
-          // Return basic poll data without vote counts on error
-          const pollObj = poll.toObject();
-          pollObj.totalVotes = 0;
-          pollObj.userVoted = false;
-          pollObj.userVoteOption = null;
-          if (pollObj.options) {
-            pollObj.options = pollObj.options.map(option => ({
-              ...option,
-              votes: 0
-            }));
-          }
-          return pollObj;
+    // Aggregation pipeline to avoid N+1 queries for votes
+    const pipeline = [
+      { $match: baseMatch },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      // Join options
+      { $lookup: { from: 'polloptions', localField: '_id', foreignField: 'poll', as: 'options' } },
+      // Votes per option
+      { $lookup: { from: 'votes', localField: '_id', foreignField: 'poll', as: 'allVotes' } },
+      // Creator minimal info
+      { $lookup: { from: 'users', localField: 'creator', foreignField: '_id', as: 'creatorDoc' } },
+      { $unwind: '$creatorDoc' },
+      // Compute counts
+      { $addFields: { 
+          totalVotes: { $size: '$allVotes' }
         }
-      })
-    );
-
-    res.json({
-      polls: pollsWithVotes,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
       },
-      filters: {
-        status,
-        myPolls
+      // Map option vote counts
+      { $addFields: {
+          options: {
+            $map: {
+              input: '$options',
+              as: 'opt',
+              in: {
+                $mergeObjects: [
+                  '$$opt',
+                  { 
+                    votes: {
+                      $size: {
+                        $filter: {
+                          input: '$allVotes',
+                          as: 'v',
+                          cond: { $eq: ['$$v.pollOption', '$$opt._id'] }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          creator: { _id: '$creatorDoc._id', name: '$creatorDoc.name', email: '$creatorDoc.email' }
+        }
+      },
+      { $project: {
+          allVotes: 0,
+          'creatorDoc': 0,
+          __v: 0
+        }
       }
+    ];
+
+    const [results, totalCountArr] = await Promise.all([
+      Poll.aggregate(pipeline).exec(),
+      Poll.aggregate([{ $match: baseMatch }, { $count: 'total' }])
+    ]);
+
+    // Determine per-user vote state only if authenticated
+    let userVotesMap = {};
+    if (req.user && results.length) {
+      const pollIds = results.map(p => p._id);
+      const userVotes = await Vote.find({ poll: { $in: pollIds }, user: req.user._id }).select('poll pollOption').lean();
+      userVotes.forEach(v => { userVotesMap[v.poll.toString()] = v.pollOption.toString(); });
+    }
+
+    const enriched = results.map(p => ({
+      ...p,
+      userVoted: !!(req.user && userVotesMap[p._id.toString()]),
+      userVoteOption: req.user && userVotesMap[p._id.toString()] ? userVotesMap[p._id.toString()] : null
+    }));
+
+    const total = totalCountArr[0]?.total || 0;
+    res.json({
+      polls: enriched,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+      filters: { status, myPolls }
     });
   } catch (error) {
-    console.error('Error in GET /api/polls:', error);
+    console.error('Error in optimized GET /api/polls:', error);
     res.status(500).json({ error: 'Failed to fetch polls' });
   }
 });

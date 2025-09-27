@@ -3,6 +3,22 @@
   margin: 0 auto;
 }
 
+/* Skeleton styles */
+.skeleton-grid { display:grid; gap:2rem; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); }
+.poll-skel { background: rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.4); padding:1.5rem 1.75rem; border-radius:18px; position:relative; overflow:hidden; backdrop-filter:blur(12px) saturate(160%); }
+[data-theme="dark"] .poll-skel { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+.skel-header { margin-bottom:1.2rem; }
+.skel-title { height:20px; width:70%; border-radius:8px; margin-bottom:.6rem; }
+.skel-meta { height:12px; width:40%; border-radius:6px; }
+.skel-options { display:flex; flex-direction:column; gap:.75rem; margin-bottom:1.2rem; }
+.skel-option { height:38px; border-radius:10px; }
+.skel-footer { display:flex; align-items:center; gap:1rem; }
+.skel-bar { height:12px; flex:1; border-radius:6px; }
+.skel-btn { height:34px; width:120px; border-radius:10px; }
+.shimmer { position:relative; background:linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.55), rgba(255,255,255,0.25)); background-size:200% 100%; animation: shimmer 1.6s linear infinite; }
+[data-theme="dark"] .shimmer { background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.18), rgba(255,255,255,0.08)); }
+@keyframes shimmer { 0% { background-position:200% 0;} 100% { background-position:-200% 0;} }
+
 .poll-list-header {
   margin-bottom: 2rem;
 }

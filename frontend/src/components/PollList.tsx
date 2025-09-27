@@ -1,10 +1,11 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import PollCard from './PollCard'
 import EditPollModal from './EditPollModal'
 import { useAuth } from './AuthContext'
 import { Poll } from '@/types'
 import './PollList.css'
+import PollSkeleton from './PollSkeleton'
 export default function PollList() {
   const { isAuthenticated, user } = useAuth()
   const [polls, setPolls] = useState<Poll[]>([])
@@ -15,7 +16,10 @@ export default function PollList() {
   const [statusFilter, setStatusFilter] = useState<'active' | 'draft' | 'expired' | 'all'>('active')
   const [editingPoll, setEditingPoll] = useState<Poll | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0, limit: 20 })
+  const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0, limit: 10 })
+  // Simple in-memory cache (component instance scope)
+  const cacheRef = useRef<Map<string, { ts: number; data: any }>>(new Map())
+  const abortRef = useRef<AbortController | null>(null)
   const [retryCountdown, setRetryCountdown] = useState(0)
   const [isRateLimited, setIsRateLimited] = useState(false)
   const handleRateLimit = useCallback((retryAfter: number) => {
@@ -81,7 +85,33 @@ export default function PollList() {
         headers.Authorization = `Bearer ${token}`
       }
       
-      const response = await fetch(url, { headers })
+      // Abort previous in-flight request
+      if (abortRef.current) abortRef.current.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
+      // Cache key based on URL + auth status (auth influences personalization)
+      const cacheKey = `${url}|auth:${!!isAuthenticated}`
+      const cached = cacheRef.current.get(cacheKey)
+      const now = Date.now()
+      const MAX_AGE = 5000 // 5s fresh window
+      const STALE_AGE = 15000 // 15s allow stale display while revalidating
+
+      // Stale-while-revalidate: if stale data exists, show it immediately
+      if (!polls.length && cached && (now - cached.ts) < STALE_AGE) {
+        setPolls(cached.data.polls || [])
+        if (cached.data.pagination) {
+          setPagination(prev => ({ ...prev, ...cached.data.pagination }))
+        }
+      }
+
+      // Skip network if still fresh
+      if (cached && (now - cached.ts) < MAX_AGE) {
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch(url, { headers, signal: controller.signal })
       
       // Handle rate limiting gracefully
       if (response.status === 429) {
@@ -96,7 +126,9 @@ export default function PollList() {
         throw new Error(errorData.error || 'Failed to fetch polls')
       }
       
-      const data = await response.json()
+  const data = await response.json()
+  // Update cache
+  cacheRef.current.set(cacheKey, { ts: Date.now(), data })
       
       // Handle the new response structure from backend
       if (data.polls && Array.isArray(data.polls)) {
@@ -114,13 +146,16 @@ export default function PollList() {
         setPolls(Array.isArray(data) ? data : [])
       }
     } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return // Silent on abort
+      }
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch polls'
       setError(errorMessage)
       console.error('Error fetching polls:', err)
     } finally {
       setLoading(false)
     }
-  }, [viewMode, showMyPolls, statusFilter, isRateLimited, isAuthenticated, handleRateLimit, pagination.page, pagination.limit])
+  }, [viewMode, showMyPolls, statusFilter, isRateLimited, isAuthenticated, handleRateLimit, pagination.page, pagination.limit, polls.length])
 
   const handleEditPoll = (poll: Poll) => {
     setEditingPoll(poll)
@@ -186,7 +221,18 @@ export default function PollList() {
     }
   }, [isRateLimited, retryCountdown, error, fetchPolls])
 
-  if (loading) return <div className="loading">Loading polls...</div>
+  if (loading && !polls.length) {
+    return (
+      <div className="poll-list">
+        <div className="poll-list-header">
+          <h2>Active Polls</h2>
+        </div>
+        <div className="skeleton-grid">
+          {Array.from({ length: 4 }).map((_, i) => <PollSkeleton key={i} />)}
+        </div>
+      </div>
+    )
+  }
   if (error) return <div className="error">{error}</div>
 
   return (
