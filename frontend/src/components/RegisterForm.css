@@ -55,7 +55,17 @@
   border: 2px solid #e9ecef;
   border-radius: 6px;
   font-size: 1rem;
+  color: #111; /* Force dark text */
+  background: #ffffff; /* Ensure white background */
+  caret-color: #111;
 }
+[data-theme="dark"] .auth-content .form-group input {
+  color: #111 !important;
+  background: #ffffff !important;
+  border-color: #d1d5db;
+}
+.form-group input::placeholder { color:#555; opacity:.85; }
+[data-theme="dark"] .auth-content .form-group input::placeholder { color:#555; }
 
 .form-group input:focus {
   outline: none;

@@ -55,7 +55,19 @@
   border-radius: 6px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
+  color: #111; /* Force dark text */
+  background: #ffffff; /* Ensure white background so text stays readable */
+  caret-color: #111;
 }
+/* Dark theme override to keep text black (user request) */
+[data-theme="dark"] .auth-content .form-group input {
+  color: #111 !important;
+  background: #ffffff !important;
+  border-color: #d1d5db;
+}
+/* Placeholder color adjustment */
+.form-group input::placeholder { color: #555; opacity: .85; }
+[data-theme="dark"] .auth-content .form-group input::placeholder { color: #555; }
 
 .form-group input:focus {
   outline: none;
