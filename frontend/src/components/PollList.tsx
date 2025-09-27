@@ -6,10 +6,11 @@ import { useAuth } from './AuthContext'
 import { Poll } from '@/types'
 import './PollList.css'
 import PollSkeleton from './PollSkeleton'
-export default function PollList() {
+interface PollListProps { initialPolls?: Poll[] }
+export default function PollList({ initialPolls }: PollListProps) {
   const { isAuthenticated, user } = useAuth()
-  const [polls, setPolls] = useState<Poll[]>([])
-  const [loading, setLoading] = useState(true)
+  const [polls, setPolls] = useState<Poll[]>(initialPolls || [])
+  const [loading, setLoading] = useState(!initialPolls)
   const [error, setError] = useState('')
   const [viewMode, setViewMode] = useState<'published' | 'all'>('published')
   const [showMyPolls, setShowMyPolls] = useState(false)
@@ -212,8 +213,13 @@ export default function PollList() {
   }
 
   useEffect(() => {
-    fetchPolls()
-  }, [fetchPolls])
+    if (!initialPolls) {
+      fetchPolls()
+    } else {
+      // Revalidate silently after mount
+      fetchPolls()
+    }
+  }, [fetchPolls, initialPolls])
 
   // Reset to first page when filters change (but ignore when only page itself changes)
   useEffect(() => {
