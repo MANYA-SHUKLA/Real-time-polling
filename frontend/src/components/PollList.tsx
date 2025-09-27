@@ -17,8 +17,13 @@ export default function PollList() {
   const [editingPoll, setEditingPoll] = useState<Poll | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0, limit: 10 })
+  interface PollsResponse {
+    polls: Poll[]
+    pagination?: { page: number; limit: number; total: number; pages: number }
+    filters?: { status?: string; myPolls?: boolean }
+  }
   // Simple in-memory cache (component instance scope)
-  const cacheRef = useRef<Map<string, { ts: number; data: any }>>(new Map())
+  const cacheRef = useRef<Map<string, { ts: number; data: PollsResponse }>>(new Map())
   const abortRef = useRef<AbortController | null>(null)
   const [retryCountdown, setRetryCountdown] = useState(0)
   const [isRateLimited, setIsRateLimited] = useState(false)
@@ -126,7 +131,7 @@ export default function PollList() {
         throw new Error(errorData.error || 'Failed to fetch polls')
       }
       
-  const data = await response.json()
+  const data: PollsResponse = await response.json()
   // Update cache
   cacheRef.current.set(cacheKey, { ts: Date.now(), data })
       
@@ -135,9 +140,10 @@ export default function PollList() {
         setPolls(data.polls)
         if (data.pagination) {
           setPagination(prev => ({
-            // Preserve current limit if backend doesn't send it
-            limit: prev.limit,
-            ...data.pagination
+            page: data.pagination ? data.pagination.page : prev.page,
+            limit: data.pagination ? data.pagination.limit : prev.limit,
+            total: data.pagination ? data.pagination.total : prev.total,
+            pages: data.pagination ? data.pagination.pages : prev.pages
           }))
           // console.debug('Pagination updated:', data.pagination)
         }
