@@ -21,8 +21,12 @@ export const metadata: Metadata = {
     title: 'Real-Time Polling App',
     description: 'Create polls, vote instantly, and watch live results update.'
   },
-  themeColor: '#6366f1',
   manifest: '/site.webmanifest'
+}
+
+// Move themeColor into the viewport export per Next.js 15 recommendation
+export const viewport = {
+  themeColor: '#6366f1'
 }
 
 export default function RootLayout({
