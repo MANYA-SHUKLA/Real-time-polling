@@ -1,0 +1,302 @@
+.create-poll {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.create-poll-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.create-poll-header h2 {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.create-poll-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.poll-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.character-count, .options-count {
+  font-size: 0.8rem;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.option-input-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.option-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.option-character-count {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.remove-option-btn {
+  padding: 12px 16px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-option-btn:hover {
+  background: #c82333;
+}
+
+.add-option-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 12px;
+}
+
+.error-messages {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.error-messages.general-errors {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.error-message {
+  display: block;
+  color: #721c24;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.error-message:last-child {
+  margin-bottom: 0;
+}
+
+.publish-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.publish-toggle input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+.toggle-label {
+  font-size: 1.1rem;
+}
+
+.publish-help {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-top: 0.25rem;
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.submit-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.submit-btn {
+  flex: 1;
+  padding: 15px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.draft-btn {
+  background: #6c757d;
+  border: 1px solid #6c757d;
+  color: white;
+}
+
+.draft-btn:hover:not(:disabled) {
+  background: #5a6268;
+  border-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.publish-btn {
+  background: #667eea;
+  border: 1px solid #667eea;
+  color: white;
+}
+
+.publish-btn:hover:not(:disabled) {
+  background: #5a67d8;
+  border-color: #5a67d8;
+  transform: translateY(-2px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.poll-actions-info {
+  background: #e8f4fd;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #bee5eb;
+}
+
+.poll-actions-info p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.poll-actions-info p:last-child {
+  margin-bottom: 0;
+}
+
+.form-help {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid #667eea;
+}
+
+.form-help h4 {
+  color: #333;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.form-help ul {
+  color: #666;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.form-help li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.form-help li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+  .create-poll {
+    padding: 1.5rem;
+  }
+  
+  .option-input-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .remove-option-btn {
+    width: 100%;
+    height: auto;
+    padding: 8px;
+  }
+  
+  .form-label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
