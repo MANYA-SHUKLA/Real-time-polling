@@ -36,7 +36,8 @@
   margin-bottom: 1rem;
   text-align: center;
 }
-.poll-list-header h2 { color: white; font-size:2.15rem; font-weight:650; margin-bottom:1.1rem; text-align:center; letter-spacing:-.8px; background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.poll-list-header h2 { font-size:2.15rem; font-weight:650; margin-bottom:1.1rem; text-align:center; letter-spacing:-.8px; color:#111827; /* solid dark for visibility */ }
+[data-theme="dark"] .poll-list-header h2 { background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899); -webkit-background-clip:text; background-clip:text; color:transparent; }
 
 .poll-controls {
   display: flex;

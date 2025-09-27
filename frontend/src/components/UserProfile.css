@@ -34,6 +34,8 @@
 
 /* Modal styling (profile edit & password change) */
 .modal { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; padding:1.5rem; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:500; animation:modal-fade .45s ease; }
+/* Force perfect centering even if parent content taller than viewport */
+.modal { min-height:100dvh; }
 @keyframes modal-fade { from { opacity:0;} to { opacity:1;} }
 
 .modal-content { position:relative; width:100%; max-width:520px; background:linear-gradient(150deg,rgba(255,255,255,0.97),rgba(255,255,255,0.85)); border:1px solid rgba(255,255,255,0.7); backdrop-filter:blur(22px) saturate(180%); -webkit-backdrop-filter:blur(22px) saturate(180%); padding:2rem 2rem 2.35rem; border-radius:28px; box-shadow:0 18px 60px -18px rgba(15,23,42,0.55),0 8px 28px -8px rgba(0,0,0,0.25); animation:panel-rise .55s cubic-bezier(.4,0,.2,1); }
