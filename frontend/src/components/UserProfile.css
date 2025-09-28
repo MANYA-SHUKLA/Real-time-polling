@@ -9,6 +9,12 @@
 .user-avatar { width:32px; height:32px; background:#6366f1; background:linear-gradient(135deg,#6366f1,#8b5cf6 55%,#d946ef); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.95rem; letter-spacing:.5px; box-shadow:0 4px 12px -6px rgba(99,102,241,0.6); }
 .user-name { font-size:.85rem; font-weight:600; letter-spacing:.25px; background:linear-gradient(90deg,#334155,#475569); -webkit-background-clip:text; background-clip:text; color:#334155; }
 
+/* Dark mode adjustments: reduce glare */
+[data-theme="dark"] .user-button { background:linear-gradient(135deg,rgba(34,42,55,0.9),rgba(24,32,45,0.85)); border-color:rgba(148,163,184,0.25); color:#f1f5f9; box-shadow:0 6px 20px -8px rgba(0,0,0,0.7); }
+[data-theme="dark"] .user-button:hover { background:linear-gradient(135deg,rgba(40,50,65,0.95),rgba(30,40,55,0.9)); }
+[data-theme="dark"] .user-avatar { box-shadow:0 4px 14px -4px rgba(99,102,241,0.55); }
+[data-theme="dark"] .user-name { background:linear-gradient(90deg,#f1f5f9,#cbd5e1); -webkit-background-clip:text; background-clip:text; color:#f1f5f9; }
+
 /* Dropdown panel */
 .user-dropdown { position:fixed; /* fixed so it doesn't shift with layout height pushing near Active Polls */ top:clamp(110px, 14vh, 160px); /* aligns visually just beneath hero header text area */ right:clamp(12px,4vw,60px); background:linear-gradient(145deg,rgba(255,255,255,0.97),rgba(255,255,255,0.9)); border:1px solid rgba(255,255,255,0.7); backdrop-filter:blur(18px) saturate(170%); -webkit-backdrop-filter:blur(18px) saturate(170%); border-radius:18px; padding:1.05rem 1.05rem 1.15rem; min-width:235px; z-index:500; margin:0; box-shadow:0 18px 46px -18px rgba(15,23,42,0.55),0 6px 18px -8px rgba(0,0,0,0.25); animation:dropdown-pop .38s cubic-bezier(.4,0,.2,1); transform-origin:top right; }
 .user-dropdown::before { content:""; position:absolute; top:-8px; right:18px; width:14px; height:14px; background:inherit; transform:rotate(45deg); border-top:1px solid rgba(255,255,255,0.7); border-left:1px solid rgba(255,255,255,0.7); }
@@ -62,6 +68,22 @@
 .message { padding:.85rem 1rem; border-radius:14px; font-size:.7rem; font-weight:600; margin:0 0 1rem; }
 .message.success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
 .message.error { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+
+/* Dark mode dropdown & modal glare reduction */
+[data-theme="dark"] .user-dropdown { background:linear-gradient(150deg,rgba(23,32,46,0.96),rgba(15,22,34,0.94)); border-color:rgba(100,116,139,0.3); box-shadow:0 20px 54px -20px rgba(0,0,0,0.85),0 8px 24px -10px rgba(0,0,0,0.55); }
+[data-theme="dark"] .user-dropdown::before { border-top:1px solid rgba(100,116,139,0.35); border-left:1px solid rgba(100,116,139,0.35); }
+[data-theme="dark"] .user-info strong { color:#f1f5f9; }
+[data-theme="dark"] .user-info span { color:#94a3b8; }
+[data-theme="dark"] .dropdown-actions button { box-shadow:0 4px 14px -6px rgba(99,102,241,0.65); }
+[data-theme="dark"] .logout-btn { background:#b91c1c !important; box-shadow:0 4px 14px -6px rgba(185,28,28,0.55); }
+[data-theme="dark"] .logout-btn:hover { background:#dc2626 !important; }
+[data-theme="dark"] .modal-content { background:linear-gradient(160deg,rgba(23,32,46,0.96),rgba(15,22,34,0.94)); border-color:rgba(100,116,139,0.3); box-shadow:0 24px 70px -24px rgba(0,0,0,0.9),0 10px 30px -12px rgba(0,0,0,0.55); }
+[data-theme="dark"] .modal-header h3 { background:none; color:#f1f5f9; -webkit-background-clip:initial; background-clip:initial; }
+[data-theme="dark"] .form-group label { color:#94a3b8; }
+[data-theme="dark"] .form-group input { background:linear-gradient(#0f172a,#1e293b); border-color:#334155; color:#f1f5f9; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04),0 1px 2px rgba(0,0,0,0.6); }
+[data-theme="dark"] .form-group input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.35),0 0 0 1px #6366f1; }
+[data-theme="dark"] .message.success { background:#14532d; color:#dcfce7; border-color:#166534; }
+[data-theme="dark"] .message.error { background:#7f1d1d; color:#fecaca; border-color:#991b1b; }
 
 /* Accessibility: Reduced motion */
 @media (prefers-reduced-motion: reduce) {
