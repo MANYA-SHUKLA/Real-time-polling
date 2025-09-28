@@ -193,3 +193,24 @@
 [data-theme="dark"] .form-help { background:linear-gradient(#1e293b,#0f172a); border-color:#334155; }
 [data-theme="dark"] .form-help h4 { color:#f1f5f9; }
 [data-theme="dark"] .form-help ul { color:#94a3b8; }
+/* =============================================
+   Light Theme Bold Visibility Override (Todo 25)
+   - Strengthen readability with bold black text for key form labels & helper text
+   - Dark mode remains governed by existing dark overrides
+============================================= */
+:root:not([data-theme="dark"]) .create-poll-header h2 {
+  background:none !important;
+  -webkit-background-clip:initial !important;
+  background-clip:initial !important;
+  color:#111827 !important;
+  font-weight:800 !important;
+}
+:root:not([data-theme="dark"]) .create-poll .form-label,
+:root:not([data-theme="dark"]) .create-poll .form-help h4,
+:root:not([data-theme="dark"]) .create-poll .form-help ul,
+:root:not([data-theme="dark"]) .create-poll .poll-actions-info p,
+:root:not([data-theme="dark"]) .create-poll .quick-presets > label,
+:root:not([data-theme="dark"]) .create-poll .time-remaining {
+  color:#111827 !important;
+  font-weight:700 !important;
+}

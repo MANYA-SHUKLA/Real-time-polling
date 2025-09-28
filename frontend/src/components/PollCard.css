@@ -109,6 +109,24 @@
 }
 /* (Removed legacy duplicate poll-card definitions to avoid conflicting brightness) */
 
+/* =============================================
+   Light Theme Bold Visibility Override (Todo 24)
+   - Make key poll text elements bold & deep black
+   - Dark theme left untouched
+============================================= */
+:root:not([data-theme="dark"]) .poll-card .poll-question,
+:root:not([data-theme="dark"]) .poll-card .option-text,
+:root:not([data-theme="dark"]) .poll-card .vote-counts,
+:root:not([data-theme="dark"]) .poll-card .total-votes,
+:root:not([data-theme="dark"]) .poll-card .poll-meta,
+:root:not([data-theme="dark"]) .poll-card .auth-required,
+:root:not([data-theme="dark"]) .poll-card .already-voted,
+:root:not([data-theme="dark"]) .poll-card .status-text,
+:root:not([data-theme="dark"]) .poll-card .last-update {
+  color:#0f172a !important;
+  font-weight:700 !important;
+}
+
 .draft-badge {
   position: absolute;
   top: 0.5rem;
