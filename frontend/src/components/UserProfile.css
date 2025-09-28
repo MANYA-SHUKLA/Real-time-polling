@@ -39,12 +39,12 @@
 .dropdown-overlay { position:fixed; inset:0; z-index:490; background:transparent; }
 
 /* Modal styling (profile edit & password change) */
-.modal { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; padding:1.5rem; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:1200; animation:modal-fade .45s ease; }
+.modal { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; padding:1.5rem; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:2000; animation:modal-fade .45s ease; }
 /* Force perfect centering even if parent content taller than viewport */
 .modal { min-height:100dvh; }
 @keyframes modal-fade { from { opacity:0;} to { opacity:1;} }
 
-.modal-content { position:relative; width:100%; max-width:520px; background:linear-gradient(150deg,rgba(255,255,255,0.97),rgba(255,255,255,0.85)); border:1px solid rgba(255,255,255,0.7); backdrop-filter:blur(22px) saturate(180%); -webkit-backdrop-filter:blur(22px) saturate(180%); padding:2rem 2rem 2.35rem; border-radius:28px; box-shadow:0 28px 80px -26px rgba(15,23,42,0.65),0 10px 34px -10px rgba(0,0,0,0.35); animation:panel-rise .55s cubic-bezier(.4,0,.2,1); z-index:1210; }
+.modal-content { position:relative; width:100%; max-width:520px; background:linear-gradient(150deg,rgba(255,255,255,0.97),rgba(255,255,255,0.85)); border:1px solid rgba(255,255,255,0.7); backdrop-filter:blur(22px) saturate(180%); -webkit-backdrop-filter:blur(22px) saturate(180%); padding:2rem 2rem 2.35rem; border-radius:28px; box-shadow:0 28px 80px -26px rgba(15,23,42,0.65),0 10px 34px -10px rgba(0,0,0,0.35); animation:panel-rise .55s cubic-bezier(.4,0,.2,1); z-index:2010; }
 @keyframes panel-rise { from { opacity:0; transform:translateY(22px) scale(.96);} to { opacity:1; transform:translateY(0) scale(1);} }
 
 .modal-header { display:flex; align-items:center; justify-content:space-between; margin:0 0 1.4rem; }
