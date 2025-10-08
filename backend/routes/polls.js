@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator'); // Added for extend route validation
+const { body } = require('express-validator'); 
 const Poll = require('../models/Poll');
 const PollOption = require('../models/PollOption');
 const Vote = require('../models/Vote');
@@ -15,12 +15,12 @@ const { pollCreationLimiter } = require('../middleware/rateLimit');
 const { sendNotificationEmail } = require('../utils/mailer');
 const router = express.Router();
 
-// Simple in-memory micro-cache (not for production clustering). TTL 5s default.
+
 const pollListCache = new Map();
-const CACHE_TTL_MS = 5000; // configurable if needed
+const CACHE_TTL_MS = 5000; 
 
 function getCacheKey(req) {
-  // Only cache if unauthenticated (no req.user)
+
   const relevant = { ...req.query };
   const sortedKeys = Object.keys(relevant).sort();
   const base = sortedKeys.map(k => `${k}=${relevant[k]}`).join('&');
@@ -28,7 +28,7 @@ function getCacheKey(req) {
 }
 
 function pollListCacheMiddleware(req, res, next) {
-  if (req.user) return next(); // Skip cache for authenticated (personalization)
+  if (req.user) return next(); 
   const key = getCacheKey(req);
   const entry = pollListCache.get(key);
   if (entry && (Date.now() - entry.time) < CACHE_TTL_MS) {
@@ -45,7 +45,7 @@ function pollListCacheMiddleware(req, res, next) {
   next();
 }
 
-// Create poll with options (including expiration)
+
 router.post('/', auth, pollCreationLimiter, createPollValidation, handleValidationErrors, async (req, res) => {
   const session = await Poll.startSession();
   session.startTransaction();
