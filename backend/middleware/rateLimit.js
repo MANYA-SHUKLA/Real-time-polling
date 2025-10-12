@@ -1,6 +1,4 @@
 const rateLimit = require('express-rate-limit');
-
-// Store for tracking votes per user (in addition to IP)
 const userVoteStore = new Map();
 
 const userVoteLimiter = rateLimit({
