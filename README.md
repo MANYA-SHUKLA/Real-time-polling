@@ -10,8 +10,6 @@ Made by Manya Shukla
 
 This project implements a real-time polling system where users can create polls, cast votes, and watch results update live. It is designed to be interactive and responsive for live events, classrooms, or quick feedback sessions.
 
-> Note: I couldn't automatically read the repository contents from GitHub in this session. The README below is a ready-to-use draft tailored for a typical real-time polling project. If you want a version exactly matching your repository, please paste the repo file tree (for example the output of `tree` or `ls -R`) or give permission to access the repo and I will update this README to reflect the real files and commands.
-
 ---
 
 ## Features
