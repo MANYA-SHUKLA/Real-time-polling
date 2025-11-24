@@ -133,20 +133,7 @@ Contributions are welcome. To contribute:
 3. Commit changes (git commit -m "Add feature")
 4. Push to your fork and open a Pull Request
 
-
-
----
-
-
----
-
 ## Contact
 
 Made by Manya Shukla  
 GitHub: https://github.com/MANYA-SHUKLA
-
----
-
-If you'd like, I can:
-- Update this README to exactly match the repository (I need the repo file tree or access), or
-- Open a pull request adding this README directly to MANYA-SHUKLA/Real-time-polling if you grant access or share the exact branch to push to.
